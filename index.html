@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BookWise ? Bilingual Bookstore Management</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Material+Symbols+Rounded:FILL@0..1&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div id="app" class="app">
+      <aside class="sidebar" aria-label="Sidebar">
+        <div class="sidebar__brand">
+          <div class="brand__logo">??</div>
+          <div class="brand__name">BookWise</div>
+        </div>
+        <nav class="sidebar__nav" role="navigation">
+          <button class="nav__item is-active" data-view="dashboard" id="nav-dashboard">
+            <span class="material-symbols-rounded">space_dashboard</span>
+            <span data-i18n="nav.dashboard">Dashboard</span>
+          </button>
+          <button class="nav__item" data-view="products" id="nav-products">
+            <span class="material-symbols-rounded">menu_book</span>
+            <span data-i18n="nav.products">Products</span>
+          </button>
+          <button class="nav__item" data-view="sales" id="nav-sales">
+            <span class="material-symbols-rounded">point_of_sale</span>
+            <span data-i18n="nav.sales">Sales (POS)</span>
+          </button>
+          <button class="nav__item" data-view="stock" id="nav-stock">
+            <span class="material-symbols-rounded">inventory_2</span>
+            <span data-i18n="nav.stock">Stock</span>
+          </button>
+          <button class="nav__item" data-view="suppliers" id="nav-suppliers">
+            <span class="material-symbols-rounded">local_shipping</span>
+            <span data-i18n="nav.suppliers">Suppliers</span>
+          </button>
+          <button class="nav__item" data-view="reports" id="nav-reports">
+            <span class="material-symbols-rounded">monitoring</span>
+            <span data-i18n="nav.reports">Reports</span>
+          </button>
+          <div class="nav__spacer"></div>
+          <button class="nav__item" data-view="settings" id="nav-settings">
+            <span class="material-symbols-rounded">settings</span>
+            <span data-i18n="nav.settings">Settings</span>
+          </button>
+        </nav>
+      </aside>
+
+      <div class="main">
+        <header class="topbar">
+          <div class="topbar__left">
+            <button class="icon-btn" id="toggle-sidebar" aria-label="Toggle sidebar">
+              <span class="material-symbols-rounded">menu</span>
+            </button>
+            <h1 class="topbar__title">BookWise</h1>
+          </div>
+          <div class="topbar__right">
+            <div class="segmented" id="lang-switch" role="radiogroup" aria-label="Language">
+              <button class="segmented__btn" data-lang="en" aria-checked="true" role="radio">EN</button>
+              <button class="segmented__btn" data-lang="fr" aria-checked="false" role="radio">FR</button>
+            </div>
+            <button class="icon-btn" id="theme-toggle" aria-label="Toggle theme">
+              <span class="material-symbols-rounded">light_mode</span>
+            </button>
+            <div class="user-menu">
+              <button class="user-menu__btn">
+                <span class="avatar">BW</span>
+                <span class="material-symbols-rounded">expand_more</span>
+              </button>
+              <div class="user-menu__dropdown" role="menu">
+                <button role="menuitem" data-i18n="user.profile">Profile</button>
+                <button role="menuitem" data-i18n="user.logout">Logout</button>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <main class="content" id="content">
+          <!-- Dashboard View -->
+          <section class="view" id="view-dashboard" data-view="dashboard">
+            <div class="grid grid--kpis">
+              <div class="card kpi">
+                <div class="kpi__meta">
+                  <span class="material-symbols-rounded">payments</span>
+                  <span class="kpi__label" data-i18n="kpi.salesToday">Sales Today</span>
+                </div>
+                <div class="kpi__value" id="kpi-sales-today">$0.00</div>
+              </div>
+              <div class="card kpi">
+                <div class="kpi__meta">
+                  <span class="material-symbols-rounded">add_shopping_cart</span>
+                  <span class="kpi__label" data-i18n="kpi.itemsSold">Items Sold</span>
+                </div>
+                <div class="kpi__value" id="kpi-items-sold">0</div>
+              </div>
+              <div class="card kpi">
+                <div class="kpi__meta">
+                  <span class="material-symbols-rounded">warning</span>
+                  <span class="kpi__label" data-i18n="kpi.lowStock">Low Stock</span>
+                </div>
+                <div class="kpi__value" id="kpi-low-stock">0</div>
+              </div>
+              <div class="card kpi">
+                <div class="kpi__meta">
+                  <span class="material-symbols-rounded">star</span>
+                  <span class="kpi__label" data-i18n="kpi.topProduct">Top Product</span>
+                </div>
+                <div class="kpi__value" id="kpi-top-product">?</div>
+              </div>
+            </div>
+
+            <div class="grid">
+              <div class="card">
+                <div class="card__header">
+                  <h3 data-i18n="dashboard.recentSales">Recent Sales</h3>
+                </div>
+                <div class="table table--compact">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th data-i18n="table.date">Date</th>
+                        <th data-i18n="table.items">Items</th>
+                        <th data-i18n="table.total">Total</th>
+                      </tr>
+                    </thead>
+                    <tbody id="recent-sales-body"></tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card__header">
+                  <h3 data-i18n="dashboard.salesOverview">Sales Overview</h3>
+                </div>
+                <div class="chart-wrap">
+                  <canvas id="chart-sales"></canvas>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Products View -->
+          <section class="view is-hidden" id="view-products" data-view="products">
+            <div class="card">
+              <div class="card__header">
+                <h3 data-i18n="products.title">Products</h3>
+                <div class="card__actions">
+                  <div class="search">
+                    <span class="material-symbols-rounded">search</span>
+                    <input id="products-search" type="search" data-i18n-placeholder="common.search" placeholder="Search" />
+                  </div>
+                  <button id="btn-add-product" class="btn btn--primary">
+                    <span class="material-symbols-rounded">add</span>
+                    <span data-i18n="products.add">Add Product</span>
+                  </button>
+                </div>
+              </div>
+              <div class="table">
+                <table>
+                  <thead>
+                    <tr>
+                      <th data-i18n="table.product">Product</th>
+                      <th data-i18n="table.category">Category</th>
+                      <th data-i18n="table.price">Price</th>
+                      <th data-i18n="table.stock">Stock</th>
+                      <th data-i18n="table.actions">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="products-body"></tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <!-- Sales (POS) View -->
+          <section class="view is-hidden" id="view-sales" data-view="sales">
+            <div class="grid grid--pos">
+              <div class="card pos__catalog">
+                <div class="card__header">
+                  <h3 data-i18n="sales.catalog">Catalog</h3>
+                  <div class="search">
+                    <span class="material-symbols-rounded">search</span>
+                    <input id="pos-search" type="search" data-i18n-placeholder="common.search" placeholder="Search" />
+                  </div>
+                </div>
+                <div id="pos-products" class="catalog"></div>
+              </div>
+
+              <div class="card pos__cart">
+                <div class="card__header">
+                  <h3 data-i18n="sales.cart">Cart</h3>
+                  <button id="pos-clear" class="btn btn--ghost">
+                    <span class="material-symbols-rounded">delete</span>
+                    <span data-i18n="sales.clear">Clear</span>
+                  </button>
+                </div>
+                <div class="table table--compact">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th data-i18n="table.product">Product</th>
+                        <th data-i18n="table.qty">Qty</th>
+                        <th data-i18n="table.total">Total</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody id="cart-body"></tbody>
+                  </table>
+                </div>
+                <div class="cart__summary">
+                  <div class="summary__row">
+                    <span data-i18n="sales.subtotal">Subtotal</span>
+                    <strong id="cart-subtotal">$0.00</strong>
+                  </div>
+                  <div class="summary__row">
+                    <span data-i18n="sales.tax">Tax</span>
+                    <strong id="cart-tax">$0.00</strong>
+                  </div>
+                  <div class="summary__row summary__row--total">
+                    <span data-i18n="sales.grandTotal">Grand Total</span>
+                    <strong id="cart-total">$0.00</strong>
+                  </div>
+                  <button id="pos-checkout" class="btn btn--primary btn--lg">
+                    <span class="material-symbols-rounded">credit_card</span>
+                    <span data-i18n="sales.checkout">Checkout</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Stock View -->
+          <section class="view is-hidden" id="view-stock" data-view="stock">
+            <div class="card">
+              <div class="card__header">
+                <h3 data-i18n="stock.title">Stock</h3>
+              </div>
+              <div class="table">
+                <table>
+                  <thead>
+                    <tr>
+                      <th data-i18n="table.product">Product</th>
+                      <th data-i18n="table.stock">Stock</th>
+                      <th data-i18n="table.adjust">Adjust</th>
+                    </tr>
+                  </thead>
+                  <tbody id="stock-body"></tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <!-- Suppliers View -->
+          <section class="view is-hidden" id="view-suppliers" data-view="suppliers">
+            <div class="card">
+              <div class="card__header">
+                <h3 data-i18n="suppliers.title">Suppliers</h3>
+                <div class="card__actions">
+                  <button id="btn-add-supplier" class="btn btn--primary">
+                    <span class="material-symbols-rounded">add_business</span>
+                    <span data-i18n="suppliers.add">Add Supplier</span>
+                  </button>
+                </div>
+              </div>
+              <div class="table">
+                <table>
+                  <thead>
+                    <tr>
+                      <th data-i18n="table.name">Name</th>
+                      <th data-i18n="table.contact">Contact</th>
+                      <th data-i18n="table.actions">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="suppliers-body"></tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <!-- Reports View -->
+          <section class="view is-hidden" id="view-reports" data-view="reports">
+            <div class="grid">
+              <div class="card">
+                <div class="card__header">
+                  <h3 data-i18n="reports.salesTrend">Sales Trend</h3>
+                </div>
+                <div class="chart-wrap">
+                  <canvas id="chart-sales-trend"></canvas>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card__header">
+                  <h3 data-i18n="reports.inventoryMix">Inventory Mix</h3>
+                </div>
+                <div class="chart-wrap">
+                  <canvas id="chart-inventory"></canvas>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Settings View -->
+          <section class="view is-hidden" id="view-settings" data-view="settings">
+            <div class="grid">
+              <div class="card">
+                <div class="card__header">
+                  <h3 data-i18n="settings.preferences">Preferences</h3>
+                </div>
+                <div class="form">
+                  <div class="form__row">
+                    <label for="settings-language" data-i18n="settings.language">Language</label>
+                    <select id="settings-language">
+                      <option value="en">English</option>
+                      <option value="fr">Fran?ais</option>
+                    </select>
+                  </div>
+                  <div class="form__row">
+                    <label for="settings-theme" data-i18n="settings.theme">Theme</label>
+                    <select id="settings-theme">
+                      <option value="light" data-i18n="settings.light">Light</option>
+                      <option value="dark" data-i18n="settings.dark">Dark</option>
+                      <option value="system" data-i18n="settings.system">System</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card__header">
+                  <h3 data-i18n="settings.about">About</h3>
+                </div>
+                <div class="about">
+                  <p>
+                    <strong>BookWise</strong> <span id="about-version">v1.0</span>
+                    <br />
+                    <span data-i18n="settings.aboutText">Bilingual bookstore management prototype.</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <!-- Product Modal -->
+    <dialog id="modal-product" class="modal">
+      <form method="dialog" class="modal__content" id="form-product">
+        <div class="modal__header">
+          <h3 id="modal-product-title" data-i18n="products.add">Add Product</h3>
+          <button class="icon-btn" value="cancel" formmethod="dialog" aria-label="Close">
+            <span class="material-symbols-rounded">close</span>
+          </button>
+        </div>
+        <div class="form grid grid--2">
+          <div class="form__row">
+            <label for="p-name-en" data-i18n="form.nameEn">Name (EN)</label>
+            <input id="p-name-en" required />
+          </div>
+          <div class="form__row">
+            <label for="p-name-fr" data-i18n="form.nameFr">Name (FR)</label>
+            <input id="p-name-fr" required />
+          </div>
+          <div class="form__row">
+            <label for="p-category" data-i18n="form.category">Category</label>
+            <input id="p-category" required />
+          </div>
+          <div class="form__row">
+            <label for="p-price" data-i18n="form.price">Price</label>
+            <input id="p-price" type="number" min="0" step="0.01" required />
+          </div>
+          <div class="form__row">
+            <label for="p-stock" data-i18n="form.stock">Stock</label>
+            <input id="p-stock" type="number" min="0" step="1" required />
+          </div>
+        </div>
+        <menu class="modal__actions">
+          <button class="btn btn--ghost" value="cancel" data-i18n="common.cancel">Cancel</button>
+          <button id="product-save" class="btn btn--primary" value="default" data-i18n="common.save">Save</button>
+        </menu>
+      </form>
+    </dialog>
+
+    <!-- Supplier Modal -->
+    <dialog id="modal-supplier" class="modal">
+      <form method="dialog" class="modal__content" id="form-supplier">
+        <div class="modal__header">
+          <h3 id="modal-supplier-title" data-i18n="suppliers.add">Add Supplier</h3>
+          <button class="icon-btn" value="cancel" formmethod="dialog" aria-label="Close">
+            <span class="material-symbols-rounded">close</span>
+          </button>
+        </div>
+        <div class="form grid grid--2">
+          <div class="form__row">
+            <label for="s-name" data-i18n="form.supplierName">Supplier Name</label>
+            <input id="s-name" required />
+          </div>
+          <div class="form__row">
+            <label for="s-contact" data-i18n="form.contact">Contact</label>
+            <input id="s-contact" required />
+          </div>
+        </div>
+        <menu class="modal__actions">
+          <button class="btn btn--ghost" value="cancel" data-i18n="common.cancel">Cancel</button>
+          <button id="supplier-save" class="btn btn--primary" value="default" data-i18n="common.save">Save</button>
+        </menu>
+      </form>
+    </dialog>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" integrity="sha384-1rXTx3mTXcffUkiQzC+KxhE4mG0oUiC8N+7QaTY8m7j2sSR8yY8j7L0uU9gUuNwY" crossorigin="anonymous"></script>
+    <script src="./app.js" type="module"></script>
+  </body>
+</html>
